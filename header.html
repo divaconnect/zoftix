@@ -1,65 +1,42 @@
 <!-- ===== ZOFTIX HEADER COMPONENT ===== -->
-<!-- Ensure Poppins font is always loaded -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 
 <style>
   :root {
-    --primary: #2288e1;
-    --primary-2: #4ea8f2;
-    --primary-3: #8ecfff;
-    --primary-deep: #0f5da8;
-    --primary-dark: #0b3f73;
-    --ink: #0a1a2f;
-    --muted: #5a6d85;
-    --line: #e6eef7;
-    --bg: #ffffff;
-    --bg-soft: #f3f8fe;
+    --primary: #2288e1; --primary-2: #4ea8f2; --primary-3: #8ecfff;
+    --primary-deep: #0f5da8; --primary-dark: #0b3f73; --ink: #0a1a2f;
+    --muted: #5a6d85; --line: #e6eef7; --bg: #ffffff; --bg-soft: #f3f8fe;
     --bg-grad: linear-gradient(135deg,#2288e1 0%,#3da0f0 40%,#7cc6ff 75%,#bfe6ff 100%);
-    --navy: #071629;
-    --font: 'Poppins', Arial, sans-serif;
+    --navy: #071629; --font: 'Poppins', Arial, sans-serif;
   }
-
-  /* Force Poppins on header elements specifically */
-  .topbar, header, #drawer, #drawer * {
-    font-family: 'Poppins', Arial, sans-serif !important;
-  }
-
+  .topbar, header, #drawer, #drawer * { font-family: 'Poppins', Arial, sans-serif !important; }
   .topbar { background: linear-gradient(90deg, #0b3f73, #1668b0 50%, #2288e1); color: #fff; font-size: 13px; padding: 9px 0; position: relative; z-index: 60; }
   .topbar .container { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
   .topbar a { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
-  
   header { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,.82); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-bottom: 1px solid rgba(230,238,247,.9); transition: .3s; }
   header.scrolled { box-shadow: 0 10px 40px -12px rgba(10,26,47,.15); }
-  
   .nav { display: flex; align-items: center; justify-content: space-between; height: 76px; gap: 20px; }
   .container { width: min(1240px, 92%); margin: 0 auto; }
-  
   .logo { display: flex; align-items: center; gap: 11px; font-weight: 800; font-size: 24px; letter-spacing: -.5px; text-decoration: none; color: var(--ink); }
   .logo-mark { width: 42px; height: 42px; border-radius: 13px; background: linear-gradient(135deg, #1668b0, #2288e1 60%, #7cc6ff); display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 20px; box-shadow: 0 8px 20px -6px rgba(34,136,225,.6); position: relative; }
   .logo-mark::after { content: ''; position: absolute; inset: -3px; border-radius: 16px; border: 1.5px solid rgba(34,136,225,.25); }
   .logo small { display: block; font-size: 10px; font-weight: 600; letter-spacing: 2.5px; color: var(--primary); line-height: 1; margin-top: 1px; }
-  
   .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; margin: 0; padding: 0; }
   .nav-links > li { position: static; }
   .nav-links a.nav-link { display: flex; align-items: center; gap: 6px; padding: 12px 16px; font-size: 14.5px; font-weight: 500; border-radius: 10px; color: #24344d; transition: .25s; text-decoration: none; }
   .nav-links a.nav-link:hover, .nav-links li.active a.nav-link { color: var(--primary); background: rgba(34,136,225,.08); }
   .nav-links .caret { width: 16px; height: 16px; transition: .3s; }
   li.has-mega:hover .caret, li.has-drop:hover .caret { transform: rotate(180deg); }
-  
   .nav-cta { display: flex; align-items: center; gap: 12px; }
   .phone { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--ink); text-decoration: none; }
   .phone span { width: 36px; height: 36px; border-radius: 50%; background: rgba(34,136,225,.1); display: grid; place-items: center; color: var(--primary); }
-  
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; font-size: 15px; padding: 15px 30px; border-radius: 14px; border: 0; cursor: pointer; transition: .35s cubic-bezier(.2,.8,.2,1); position: relative; overflow: hidden; white-space: nowrap; text-decoration: none; }
   .btn-primary { background: linear-gradient(135deg, #1a7ad1, #2288e1 55%, #4eabf5); color: #fff; box-shadow: 0 12px 30px -8px rgba(34,136,225,.55); }
   .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -8px rgba(34,136,225,.65); }
-  
   .hamburger { display: none; width: 46px; height: 46px; border-radius: 12px; border: 1px solid var(--line); background: #fff; cursor: pointer; flex-direction: column; gap: 5px; align-items: center; justify-content: center; }
   .hamburger span { width: 20px; height: 2px; background: var(--ink); border-radius: 2px; transition: .3s; }
-  
-  /* Mega Menu */
   .mega { position: absolute; top: 100%; left: 0; right: 0; opacity: 0; visibility: hidden; transform: translateY(14px); transition: .35s cubic-bezier(.2,.8,.2,1); padding: 18px 0 26px; }
   li.has-mega:hover .mega, li.has-mega:focus-within .mega { opacity: 1; visibility: visible; transform: translateY(0); }
   .mega-inner { background: #fff; border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 30px 80px -20px rgba(10,26,47,.22); overflow: hidden; display: grid; grid-template-columns: 1fr 1fr 1fr 320px; padding: 0; }
@@ -75,15 +52,11 @@
   .mega-cta h5 { font-size: 20px; line-height: 1.3; margin: 12px 0 8px; }
   .mega-cta p { font-size: 13.5px; opacity: .85; }
   .mega-cta .btn { margin-top: 16px; background: #fff; color: var(--primary-dark); }
-  
-  /* Standard Dropdown */
   .dropdown { position: absolute; top: 100%; background: #fff; border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 60px -18px rgba(10,26,47,.22); padding: 12px; min-width: 260px; opacity: 0; visibility: hidden; transform: translateY(12px); transition: .3s; }
   li.has-drop { position: relative; }
   li.has-drop:hover .dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
   .dropdown a { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 12px; font-size: 14px; font-weight: 500; text-decoration: none; color: inherit; }
   .dropdown a:hover { background: var(--bg-soft); color: var(--primary); }
-  
-  /* Mobile Menu */
   #drawer { position: fixed; top: 0; right: -100%; width: min(420px, 92vw); height: 100dvh; background: #fff; z-index: 1000; transition: .45s cubic-bezier(.2,.8,.2,1); overflow: auto; padding: 22px; box-shadow: -20px 0 60px rgba(0,0,0,.15); }
   #drawer.open { right: 0; }
   #overlay { position: fixed; inset: 0; background: rgba(7,22,41,.5); backdrop-filter: blur(3px); z-index: 900; opacity: 0; visibility: hidden; transition: .3s; }
@@ -94,7 +67,6 @@
   .acc-panel a { display: block; padding: 10px 12px; font-size: 14px; color: var(--muted); border-radius: 10px; text-decoration: none; }
   .acc-panel a:hover { background: var(--bg-soft); color: var(--primary); }
   .acc-panel a.sub-head { font-weight: 600; color: var(--ink); margin-top: 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); }
-  
   @media (max-width: 1080px) {
     .nav-links, .nav-cta .phone, .nav-cta .btn-primary { display: none; }
     .hamburger { display: flex; }
@@ -199,39 +171,4 @@
   <a href="contact.html" class="btn btn-primary" style="width:100%;margin-top:18px">Get Free Audit →</a>
   <a href="tel:+14155550132" class="btn btn-ghost" style="width:100%;margin-top:10px">Call us</a>
 </aside>
-
-<!-- Header-specific JavaScript -->
-<script>
-  // Drawer Toggle
-  const drawer = document.getElementById('drawer'), overlay = document.getElementById('overlay');
-  const ham = document.getElementById('ham');
-  if (ham) {
-    ham.onclick = () => { drawer.classList.add('open'); overlay.classList.add('show'); };
-  }
-  const closeDrawerBtn = document.getElementById('closeDrawer');
-  if (closeDrawerBtn) {
-    closeDrawerBtn.onclick = closeD;
-  }
-  if (overlay) {
-    overlay.onclick = closeD;
-  }
-  function closeD() { drawer.classList.remove('open'); overlay.classList.remove('show'); }
-  
-  // Close drawer when clicking a link inside it
-  drawer && drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeD));
-
-  // Accordion for mobile menu
-  document.querySelectorAll('.acc-btn').forEach(b => b.onclick = () => {
-    const p = b.nextElementSibling, open = p.style.maxHeight && p.style.maxHeight !== '0px';
-    document.querySelectorAll('.acc-panel').forEach(x => x.style.maxHeight = null);
-    document.querySelectorAll('.acc-btn span').forEach(s => s.textContent = '+');
-    if (!open) { p.style.maxHeight = p.scrollHeight + 'px'; b.querySelector('span').textContent = '−'; }
-  });
-
-  // Sticky header shadow
-  const header = document.getElementById('header');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 20) header.classList.add('scrolled');
-    else header.classList.remove('scrolled');
-  }, { passive: true });
-</script>
+<!-- NO SCRIPTS NEEDED HERE, main.js HANDLES EVERYTHING -->
