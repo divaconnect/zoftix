@@ -1,117 +1,31 @@
 // ==========================================
-// 1. DYNAMIC HEADER & FOOTER INJECTION
+// 1. DYNAMIC HEADER INJECTION
 // ==========================================
-
-// Fetch and inject Header
-fetch('header.html')
-  .then(response => response.text())
-  .then(data => {
-    const headerInclude = document.getElementById('header-include');
-    if (headerInclude) {
-      headerInclude.innerHTML = data;
-      
-      // CRITICAL: Re-execute scripts inside the injected header
-      // (Browsers do not run scripts injected via innerHTML automatically)
-      Array.from(headerInclude.querySelectorAll('script')).forEach(oldScript => {
-        const newScript = document.createElement('script');
-        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-        newScript.textContent = oldScript.textContent;
-        oldScript.parentNode.replaceChild(newScript, oldScript);
-      });
-    }
-  })
-  .catch(err => console.error('Error loading header:', err));
-
-// Fetch and inject Footer
-fetch('footer.html')
-  .then(response => response.text())
-  .then(data => {
-    const footerInclude = document.getElementById('footer-include');
-    if (footerInclude) {
-      footerInclude.innerHTML = data;
-      
-      // Re-execute scripts inside the injected footer
-      Array.from(footerInclude.querySelectorAll('script')).forEach(oldScript => {
-        const newScript = document.createElement('script');
-        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-        newScript.textContent = oldScript.textContent;
-        oldScript.parentNode.replaceChild(newScript, oldScript);
-      });
-
-      // Footer Back-to-Top Button Logic
-      const backTop = document.getElementById('toTop');
-      if(backTop) {
-        window.addEventListener('scroll', () => {
-          if (window.scrollY > 500) {
-            backTop.classList.add('show');
-          } else {
-            backTop.classList.remove('show');
-          }
-        }, { passive: true });
-        backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-      }
-    }
-  })
-  .catch(err => console.error('Error loading footer:', err));
-
-
-// ==========================================
-// 2. GLOBAL SCROLL ANIMATIONS & COUNTERS
-// ==========================================
-
-// Scroll Reveal Animation
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('in');
-      observer.unobserve(entry.target); // Stop observing once it's visible
-    }
-  });
-}, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
-
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-// Animated Counters
-const counterObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const el = entry.target;
-      const target = +el.dataset.target;
-      let current = 0;
-      const step = target / 70; // Speed of animation
-      
-      const updateCounter = () => {
-        current += step;
-        if (current < target) {
-          el.textContent = Math.round(current);
-          requestAnimationFrame(updateCounter);
-        } else {
-          el.textContent = target;
+document.addEventListener('DOMContentLoaded', () => {
+  const headerContainer = document.getElementById('header-include');
+  if (headerContainer) {
+    fetch('header.html')
+      .then(response => response.text())
+      .then(data => {
+        headerContainer.innerHTML = data;
+        
+        // Now that header is loaded, attach scroll listener for sticky shadow
+        const header = document.getElementById('header');
+        if(header) {
+          window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
+          }, { passive: true });
         }
-      };
-      
-      updateCounter();
-      counterObserver.unobserve(el);
-    }
-  });
-}, { threshold: 0.5 });
-
-document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
-
-// Sticky Header Shadow
-const header = document.getElementById('header');
-if(header) {
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 20) header.classList.add('scrolled');
-    else header.classList.remove('scrolled');
-  }, { passive: true });
-}
-
+      })
+      .catch(err => console.error('Error loading header:', err));
+  }
+});
 
 // ==========================================
-// 3. BULLETPROOF MOBILE MENU & ACCORDIONS
+// 2. BULLETPROOF GLOBAL CLICK LOGIC (Event Delegation)
 // ==========================================
-// Using Event Delegation so it works instantly on injected HTML
+// This works instantly on injected HTML without needing to re-run scripts
 
 document.addEventListener('click', function(e) {
   // Open Mobile Drawer
@@ -146,7 +60,7 @@ document.addEventListener('click', function(e) {
     }
   }
 
-  // Handle Mobile Menu Accordion Toggles (Services, Company, etc.)
+  // Handle Mobile Menu Accordion Toggles
   const accBtn = e.target.closest('.acc-btn');
   if (accBtn) {
     const panel = accBtn.nextElementSibling;
@@ -163,59 +77,103 @@ document.addEventListener('click', function(e) {
       if (span) span.textContent = '−';
     }
   }
+
+  // Handle FAQ Accordion Toggles
+  const faqTrigger = e.target.closest('.faq-q');
+  if (faqTrigger) {
+    const item = faqTrigger.closest('.faq-item');
+    const answer = item.querySelector('.faq-a');
+    const isActive = item.classList.contains('active');
+
+    // Close all other FAQ items
+    document.querySelectorAll('.faq-item').forEach(otherItem => {
+      if (otherItem !== item) {
+        otherItem.classList.remove('active');
+        const otherAnswer = otherItem.querySelector('.faq-a');
+        if (otherAnswer) otherAnswer.style.maxHeight = '0px';
+      }
+    });
+
+    // Toggle current FAQ item
+    if (!isActive) {
+      item.classList.add('active');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    } else {
+      item.classList.remove('active');
+      answer.style.maxHeight = '0px';
+    }
+  }
+  
+  // Back to top button
+  const toTopBtn = e.target.closest('#toTop');
+  if(toTopBtn) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 });
 
-
 // ==========================================
-// 4. FAQ ACCORDION (For Contact/Why Zoftix Pages)
+// 3. GLOBAL SCROLL ANIMATIONS & COUNTERS
 // ==========================================
 
-document.addEventListener('click', function(e) {
-  const faqTrigger = e.target.closest('.faq-q');
-  if (!faqTrigger) return;
-
-  const item = faqTrigger.closest('.faq-item');
-  const answer = item.querySelector('.faq-a');
-  const isActive = item.classList.contains('active');
-
-  // Close all other FAQ items
-  document.querySelectorAll('.faq-item').forEach(otherItem => {
-    if (otherItem !== item) {
-      otherItem.classList.remove('active');
-      const otherAnswer = otherItem.querySelector('.faq-a');
-      if (otherAnswer) otherAnswer.style.maxHeight = '0px';
+// Scroll Reveal Animation
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('in');
+      observer.unobserve(entry.target);
     }
   });
+}, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-  // Toggle current FAQ item
-  if (!isActive) {
-    item.classList.add('active');
-    answer.style.maxHeight = answer.scrollHeight + 'px';
-  } else {
-    item.classList.remove('active');
-    answer.style.maxHeight = '0px';
+// Animated Counters
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const target = +el.dataset.target;
+      let current = 0;
+      const step = target / 70;
+      const updateCounter = () => {
+        current += step;
+        if (current < target) {
+          el.textContent = Math.round(current);
+          requestAnimationFrame(updateCounter);
+        } else {
+          el.textContent = target;
+        }
+      };
+      updateCounter();
+      counterObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+
+// Show/Hide Back to Top button on scroll
+window.addEventListener('scroll', () => {
+  const toTop = document.getElementById('toTop');
+  if (toTop) {
+    if (window.scrollY > 500) toTop.classList.add('show');
+    else toTop.classList.remove('show');
   }
-});
+}, { passive: true });
 
-// Auto-open first FAQ if it exists
+// Preloader hide
 window.addEventListener('load', () => {
-  const firstFaq = document.querySelector('.faq-item.open');
-  if(firstFaq) {
-    const firstAnswer = firstFaq.querySelector('.faq-a');
-    if(firstAnswer) firstAnswer.style.maxHeight = firstAnswer.scrollHeight + 'px';
+  const preloader = document.getElementById('preloader');
+  if (preloader) {
+    setTimeout(() => preloader.classList.add('hide'), 700);
   }
 });
 
-
 // ==========================================
-// 5. FORM SUBMISSION LOGIC (Zoftix Lead Forms)
+// 4. FORM SUBMISSION LOGIC
 // ==========================================
-
 const leadForm = document.getElementById('leadForm');
 if(leadForm) {
   leadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
     const submitBtn = leadForm.querySelector('button[type="submit"]');
     const originalBtnText = submitBtn.innerText;
     if(submitBtn) {
@@ -238,17 +196,13 @@ if(leadForm) {
       return;
     }
 
-    // --- Dummy success simulation ---
-    // Replace this block with your actual fetch() to Google Apps Script or backend
+    // Dummy success simulation
     setTimeout(() => {
       const formWrap = document.getElementById('formWrap');
       const formSuccess = document.getElementById('formSuccess');
-      
       if(formWrap) formWrap.style.display = 'none';
       if(formSuccess) formSuccess.style.display = 'block';
-      
       leadForm.reset();
-      
       if(submitBtn) {
         submitBtn.disabled = false;
         submitBtn.innerText = originalBtnText;
@@ -256,15 +210,3 @@ if(leadForm) {
     }, 800);
   });
 }
-
-
-// ==========================================
-// 6. AUTOMATIC FAVICON INJECTION
-// ==========================================
-
-const faviconLink = document.createElement('link');
-faviconLink.rel = 'icon';
-faviconLink.type = 'image/svg+xml';
-// Zoftix Z Logo SVG embedded
-faviconLink.href = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="24" fill="%232288e1"/><path d="M28 32h44l-26 18h26v12H28l26-18H28z" fill="white"/></svg>';
-document.head.appendChild(faviconLink);
