@@ -210,3 +210,25 @@ if(leadForm) {
     }, 800);
   });
 }
+// ==========================================
+// SIDE FOOTER TOGGLE LOGIC
+// ==========================================
+document.addEventListener('click', function(e) {
+  // Open Side Footer
+  if (e.target.closest('#sideFooterTrigger')) {
+    const panel = document.getElementById('sideFooter');
+    const overlay = document.getElementById('sfOverlay');
+    if(panel) panel.classList.add('active');
+    if(overlay) overlay.classList.add('active');
+    return;
+  }
+
+  // Close Side Footer
+  if (e.target.closest('#closeSideFooter') || e.target.closest('#sfOverlay')) {
+    const panel = document.getElementById('sideFooter');
+    const overlay = document.getElementById('sfOverlay');
+    if(panel) panel.classList.remove('active');
+    if(overlay) overlay.classList.remove('active');
+    return;
+  }
+});
